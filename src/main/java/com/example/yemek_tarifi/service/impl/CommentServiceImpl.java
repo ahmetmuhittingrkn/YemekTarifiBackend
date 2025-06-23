@@ -4,13 +4,10 @@ import com.example.yemek_tarifi.dto.CommentRequestDTO;
 import com.example.yemek_tarifi.dto.CommentResponseDTO;
 import com.example.yemek_tarifi.entity.Comment;
 import com.example.yemek_tarifi.entity.Recipe;
-import com.example.yemek_tarifi.entity.User;
 import com.example.yemek_tarifi.repository.CommentRepository;
 import com.example.yemek_tarifi.repository.RecipeRepository;
-import com.example.yemek_tarifi.repository.UserRepository;
 import com.example.yemek_tarifi.service.CommentService;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,53 +19,46 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final RecipeRepository recipeRepository;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public CommentServiceImpl(CommentRepository commentRepository, RecipeRepository recipeRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public CommentServiceImpl(CommentRepository commentRepository, RecipeRepository recipeRepository, ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
         this.recipeRepository = recipeRepository;
-        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
     @Override
     @Transactional
-    public CommentResponseDTO addComment(CommentRequestDTO commentRequestDTO, String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+    public CommentResponseDTO addComment(CommentRequestDTO commentRequestDTO) {
         Recipe recipe = recipeRepository.findById(commentRequestDTO.getRecipeId())
                 .orElseThrow(() -> new RuntimeException("Tarif bulunamadı: " + commentRequestDTO.getRecipeId()));
         Comment comment = new Comment();
         comment.setText(commentRequestDTO.getText());
         comment.setRecipe(recipe);
-        comment.setUser(user);
         commentRepository.save(comment);
-        return modelMapper.map(comment, CommentResponseDTO.class);
+        CommentResponseDTO response = modelMapper.map(comment, CommentResponseDTO.class);
+        response.setUsername(null); // veya "Anonim"
+        return response;
     }
 
     @Override
     @Transactional
-    public void deleteComment(Long commentId, String username) {
+    public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Yorum bulunamadı: " + commentId));
-        if (!comment.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Sadece kendi yorumunuzu silebilirsiniz.");
-        }
         commentRepository.delete(comment);
     }
 
     @Override
     @Transactional
-    public CommentResponseDTO updateComment(Long commentId, CommentRequestDTO commentRequestDTO, String username) {
+    public CommentResponseDTO updateComment(Long commentId, CommentRequestDTO commentRequestDTO) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Yorum bulunamadı: " + commentId));
-        if (!comment.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Sadece kendi yorumunuzu güncelleyebilirsiniz.");
-        }
         comment.setText(commentRequestDTO.getText());
         commentRepository.save(comment);
-        return modelMapper.map(comment, CommentResponseDTO.class);
+        CommentResponseDTO response = modelMapper.map(comment, CommentResponseDTO.class);
+        response.setUsername(null); // veya "Anonim"
+        return response;
     }
 
     @Override

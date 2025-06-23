@@ -21,9 +21,6 @@ public class Comment {
     @ManyToOne(fetch =  FetchType.LAZY)
     private Recipe recipe;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    private User user;
-
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date createdAt;

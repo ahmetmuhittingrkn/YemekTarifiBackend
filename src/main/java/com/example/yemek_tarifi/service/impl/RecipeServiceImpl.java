@@ -4,6 +4,8 @@ import com.example.yemek_tarifi.dto.RecipeRequestDTO;
 import com.example.yemek_tarifi.dto.RecipeResponseDTO;
 import com.example.yemek_tarifi.entity.Recipe;
 import com.example.yemek_tarifi.repository.RecipeRepository;
+import com.example.yemek_tarifi.repository.CategoryRepository;
+import com.example.yemek_tarifi.entity.Category;
 import com.example.yemek_tarifi.service.RecipeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +19,28 @@ import java.util.stream.Collectors;
 public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
-    public RecipeServiceImpl(RecipeRepository recipeRepository,ModelMapper modelMapper) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, CategoryRepository categoryRepository, ModelMapper modelMapper) {
         this.recipeRepository = recipeRepository;
-        this.modelMapper=modelMapper;
+        this.categoryRepository = categoryRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public RecipeResponseDTO createRecipe(RecipeRequestDTO recipeRequestDTO) {
-        Recipe recipe = modelMapper.map(recipeRequestDTO, Recipe.class);
+        Category category = categoryRepository.findById(recipeRequestDTO.getCategoryId())
+            .orElseThrow(() -> new RuntimeException("Kategori bulunamadı: " + recipeRequestDTO.getCategoryId()));
+
+        Recipe recipe = new Recipe();
+        recipe.setTitle(recipeRequestDTO.getTitle());
+        recipe.setDescription(recipeRequestDTO.getDescription());
+        recipe.setIngredients(recipeRequestDTO.getIngredients());
+        recipe.setInstructions(recipeRequestDTO.getInstructions());
+        recipe.setImageUrl(recipeRequestDTO.getImageUrl());
+        recipe.setCategory(category);
+
         Recipe savedRecipe = recipeRepository.save(recipe);
         return modelMapper.map(savedRecipe, RecipeResponseDTO.class);
     }

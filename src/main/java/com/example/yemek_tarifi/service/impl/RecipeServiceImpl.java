@@ -28,7 +28,6 @@ public class RecipeServiceImpl implements RecipeService {
     public RecipeResponseDTO createRecipe(RecipeRequestDTO recipeRequestDTO) {
         Recipe recipe = modelMapper.map(recipeRequestDTO, Recipe.class);
         Recipe savedRecipe = recipeRepository.save(recipe);
-        // Kaydedilen Entity'yi Response DTO'ya tek satırda dönüştür.
         return modelMapper.map(savedRecipe, RecipeResponseDTO.class);
     }
 
@@ -51,7 +50,6 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe existingRecipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
 
-        // ModelMapper gelen DTO'daki bilgileri mevcut entity üzerine yazar.
         modelMapper.map(requestDTO, existingRecipe);
 
         Recipe updatedRecipe = recipeRepository.save(existingRecipe);

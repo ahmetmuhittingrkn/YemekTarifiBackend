@@ -29,6 +29,8 @@ public class Recipe {
 
     private String imageUrl;
 
+    private int likeCount=0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;

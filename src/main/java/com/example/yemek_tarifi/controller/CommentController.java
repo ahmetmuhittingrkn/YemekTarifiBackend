@@ -4,6 +4,7 @@ import com.example.yemek_tarifi.dto.CommentRequestDTO;
 import com.example.yemek_tarifi.dto.CommentResponseDTO;
 import com.example.yemek_tarifi.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,5 +34,11 @@ public class CommentController {
     @GetMapping("/recipe/{recipeId}")
     public List<CommentResponseDTO> getCommentsByRecipe(@PathVariable Long recipeId) {
         return commentService.getCommentsByRecipeId(recipeId);
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> likeComment(@PathVariable Long id) {
+        commentService.incrementLikeCount(id);
+        return ResponseEntity.ok().build();
     }
 }

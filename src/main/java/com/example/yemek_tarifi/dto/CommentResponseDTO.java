@@ -9,4 +9,5 @@ public class CommentResponseDTO {
     private String text;
     private String username;
     private Date createdAt;
+    private int likeCount;
 } 

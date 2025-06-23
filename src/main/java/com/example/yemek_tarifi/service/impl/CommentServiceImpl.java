@@ -72,4 +72,13 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
         return comments.stream().map(comment -> modelMapper.map(comment, CommentResponseDTO.class)).collect(Collectors.toList());
     }
+
+    @Override
+    public void incrementLikeCount(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new RuntimeException("Yorum bulunamadı: " + commentId)
+        );
+        comment.setLikeCount(comment.getLikeCount() + 1);
+        commentRepository.save(comment);
+    }
 }

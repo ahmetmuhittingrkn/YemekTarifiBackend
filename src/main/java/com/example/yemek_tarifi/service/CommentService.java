@@ -13,4 +13,6 @@ public interface CommentService {
     CommentResponseDTO updateComment(Long commentId, CommentRequestDTO commentRequestDTO);
 
     List<CommentResponseDTO> getCommentsByRecipeId(Long recipeId);
+
+    void incrementLikeCount(Long commentId);
 }

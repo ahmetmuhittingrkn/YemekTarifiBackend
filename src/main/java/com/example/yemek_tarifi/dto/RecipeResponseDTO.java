@@ -10,5 +10,6 @@ public class RecipeResponseDTO {
     private String ingredients;
     private String instructions;
     private String imageUrl;
+    private int likeCount;
     private CategoryResponseDTO category;
 }

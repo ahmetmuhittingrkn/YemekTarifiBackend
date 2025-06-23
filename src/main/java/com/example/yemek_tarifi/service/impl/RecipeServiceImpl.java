@@ -77,4 +77,12 @@ public class RecipeServiceImpl implements RecipeService {
         }
         recipeRepository.deleteById(id);
     }
+
+    @Override
+    public void incrementLikeCount(Long id) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
+        recipe.setLikeCount(recipe.getLikeCount() + 1);
+        recipeRepository.save(recipe);
+    }
 }

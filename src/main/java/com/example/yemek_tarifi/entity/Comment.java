@@ -25,6 +25,8 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private java.util.Date createdAt;
 
+    private int likeCount = 0;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = new java.util.Date();

@@ -52,4 +52,10 @@ public class RecipeController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> likeRecipe(@PathVariable Long id) {
+        recipeService.incrementLikeCount(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

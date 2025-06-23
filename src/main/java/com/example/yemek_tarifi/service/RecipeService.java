@@ -16,4 +16,6 @@ public interface RecipeService {
     RecipeResponseDTO updateRecipe(Long id, RecipeRequestDTO requestDTO);
 
     void deleteRecipeById(Long id);
+
+    void incrementLikeCount(Long id);
 }

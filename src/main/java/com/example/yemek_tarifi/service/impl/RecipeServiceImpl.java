@@ -7,6 +7,7 @@ import com.example.yemek_tarifi.repository.RecipeRepository;
 import com.example.yemek_tarifi.repository.CategoryRepository;
 import com.example.yemek_tarifi.entity.Category;
 import com.example.yemek_tarifi.service.RecipeService;
+import com.example.yemek_tarifi.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDTO createRecipe(RecipeRequestDTO recipeRequestDTO) {
         Category category = categoryRepository.findById(recipeRequestDTO.getCategoryId())
-            .orElseThrow(() -> new RuntimeException("Kategori bulunamadı: " + recipeRequestDTO.getCategoryId()));
+            .orElseThrow(() -> new ResourceNotFoundException("Category", recipeRequestDTO.getCategoryId()));
 
         Recipe recipe = new Recipe();
         recipe.setTitle(recipeRequestDTO.getTitle());
@@ -62,7 +63,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDTO updateRecipe(Long id, RecipeRequestDTO requestDTO) {
         Recipe existingRecipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", id));
 
         modelMapper.map(requestDTO, existingRecipe);
 
@@ -73,7 +74,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public void deleteRecipeById(Long id) {
         if (!recipeRepository.existsById(id)) {
-            throw new RuntimeException("Recipe not found with id: " + id);
+            throw new ResourceNotFoundException("Recipe", id);
         }
         recipeRepository.deleteById(id);
     }
@@ -81,7 +82,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public void incrementLikeCount(Long id) {
         Recipe recipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", id));
         recipe.setLikeCount(recipe.getLikeCount() + 1);
         recipeRepository.save(recipe);
     }

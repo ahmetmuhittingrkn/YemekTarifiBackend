@@ -7,6 +7,7 @@ import com.example.yemek_tarifi.entity.Recipe;
 import com.example.yemek_tarifi.repository.CommentRepository;
 import com.example.yemek_tarifi.repository.RecipeRepository;
 import com.example.yemek_tarifi.service.CommentService;
+import com.example.yemek_tarifi.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentResponseDTO addComment(CommentRequestDTO commentRequestDTO) {
         Recipe recipe = recipeRepository.findById(commentRequestDTO.getRecipeId())
-                .orElseThrow(() -> new RuntimeException("Tarif bulunamadı: " + commentRequestDTO.getRecipeId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", commentRequestDTO.getRecipeId()));
         Comment comment = new Comment();
         comment.setText(commentRequestDTO.getText());
         comment.setRecipe(recipe);
@@ -45,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Yorum bulunamadı: " + commentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
         commentRepository.delete(comment);
     }
 
@@ -53,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentResponseDTO updateComment(Long commentId, CommentRequestDTO commentRequestDTO) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Yorum bulunamadı: " + commentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
         comment.setText(commentRequestDTO.getText());
         commentRepository.save(comment);
         CommentResponseDTO response = modelMapper.map(comment, CommentResponseDTO.class);
@@ -65,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> getCommentsByRecipeId(Long recipeId) {
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("Tarif bulunamadı: " + recipeId));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", recipeId));
         List<Comment> comments = commentRepository.findAll()
                 .stream()
                 .filter(c -> c.getRecipe().getId().equals(recipeId))
@@ -76,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void incrementLikeCount(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new RuntimeException("Yorum bulunamadı: " + commentId)
+                () -> new ResourceNotFoundException("Comment", commentId)
         );
         comment.setLikeCount(comment.getLikeCount() + 1);
         commentRepository.save(comment);

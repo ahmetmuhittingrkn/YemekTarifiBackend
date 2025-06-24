@@ -5,6 +5,7 @@ import com.example.yemek_tarifi.dto.CategoryResponseDTO;
 import com.example.yemek_tarifi.entity.Category;
 import com.example.yemek_tarifi.repository.CategoryRepository;
 import com.example.yemek_tarifi.service.CategoryService;
+import com.example.yemek_tarifi.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO) {
         // Önce kategoriyi bul, yoksa hata fırlat
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Kategori bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", id));
 
         // RequestDTO'daki değerleri mevcut kategoriye aktar
         modelMapper.map(requestDTO, existingCategory);
@@ -67,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         // Kategori var mı kontrol et
         if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Kategori bulunamadı: " + id);
+            throw new ResourceNotFoundException("Category", id);
         }
         // Kategoriyi sil
         categoryRepository.deleteById(id);

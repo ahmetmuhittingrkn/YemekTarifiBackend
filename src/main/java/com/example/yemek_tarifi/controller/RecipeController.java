@@ -3,6 +3,7 @@ package com.example.yemek_tarifi.controller;
 import com.example.yemek_tarifi.dto.RecipeRequestDTO;
 import com.example.yemek_tarifi.dto.RecipeResponseDTO;
 import com.example.yemek_tarifi.service.RecipeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<RecipeResponseDTO> createRecipe(@RequestBody RecipeRequestDTO requestDTO) {
+    public ResponseEntity<RecipeResponseDTO> createRecipe(@Valid @RequestBody RecipeRequestDTO requestDTO) {
         RecipeResponseDTO createdRecipe = recipeService.createRecipe(requestDTO);
         // Cevap olarak 201 Created durumu ve oluşturulan tarifin bilgisini döner.
         return new ResponseEntity<>(createdRecipe, HttpStatus.CREATED);
@@ -40,7 +41,7 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RecipeResponseDTO> updateRecipe(@PathVariable Long id, @RequestBody RecipeRequestDTO requestDTO) {
+    public ResponseEntity<RecipeResponseDTO> updateRecipe(@PathVariable Long id, @Valid @RequestBody RecipeRequestDTO requestDTO) {
         RecipeResponseDTO updatedRecipe = recipeService.updateRecipe(id, requestDTO);
         return ResponseEntity.ok(updatedRecipe); // Başarılı olursa 200 OK ve güncellenmiş tarifi döner.
     }

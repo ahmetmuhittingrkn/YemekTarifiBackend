@@ -3,6 +3,7 @@ package com.example.yemek_tarifi.controller;
 import com.example.yemek_tarifi.dto.CategoryRequestDTO;
 import com.example.yemek_tarifi.dto.CategoryResponseDTO;
 import com.example.yemek_tarifi.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,13 +34,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO){
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO){
         CategoryResponseDTO createdCategory = categoryService.createCategory(categoryRequestDTO);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDTO requestDTO) {
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestDTO requestDTO) {
         CategoryResponseDTO updatedCategory = categoryService.updateCategory(id, requestDTO);
         return ResponseEntity.ok(updatedCategory);
     }

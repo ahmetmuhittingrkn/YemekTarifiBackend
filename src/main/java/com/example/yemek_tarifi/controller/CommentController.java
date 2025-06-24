@@ -3,6 +3,7 @@ package com.example.yemek_tarifi.controller;
 import com.example.yemek_tarifi.dto.CommentRequestDTO;
 import com.example.yemek_tarifi.dto.CommentResponseDTO;
 import com.example.yemek_tarifi.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,27 +14,34 @@ import java.util.List;
 @RequestMapping("/api/comments")
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     @PostMapping
-    public CommentResponseDTO addComment(@RequestBody CommentRequestDTO commentRequestDTO) {
-        return commentService.addComment(commentRequestDTO);
+    public ResponseEntity<CommentResponseDTO> addComment(@Valid @RequestBody CommentRequestDTO commentRequestDTO) {
+        CommentResponseDTO createdComment = commentService.addComment(commentRequestDTO);
+        return ResponseEntity.ok(createdComment);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public CommentResponseDTO updateComment(@PathVariable Long id, @RequestBody CommentRequestDTO commentRequestDTO) {
-        return commentService.updateComment(id, commentRequestDTO);
+    public ResponseEntity<CommentResponseDTO> updateComment(@PathVariable Long id, @Valid @RequestBody CommentRequestDTO commentRequestDTO) {
+        CommentResponseDTO updatedComment= commentService.updateComment(id, commentRequestDTO);
+        return ResponseEntity.ok(updatedComment);
     }
 
     @GetMapping("/recipe/{recipeId}")
-    public List<CommentResponseDTO> getCommentsByRecipe(@PathVariable Long recipeId) {
-        return commentService.getCommentsByRecipeId(recipeId);
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByRecipe(@PathVariable Long recipeId) {
+        List<CommentResponseDTO> commentList = commentService.getCommentsByRecipeId(recipeId);
+        return ResponseEntity.ok(commentList);
     }
 
     @PostMapping("/{id}/like")
